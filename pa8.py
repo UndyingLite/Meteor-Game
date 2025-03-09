@@ -2,15 +2,17 @@ import pygame as pyg 		#Import pygame from computer, and rename to pyg
 import random			#Import random function
 
 def set_speed(score):		#Create function “set_speed” with parameter “score”
-    if score <= 25:			
-        speed = 10			#When score is less than 25, the speed of drop is 10
-    elif score <= 50:
-        speed = 15			#When score is less than 50, the speed of drop is 15
-    elif score <= 75:
-        speed = 20			#When score is less than 75, the speed of drop is 20
-    else:
-        speed = 25			#Sets speed to 25 in all other conditions
-    return speed			#Returns value speed
+    # if score <= 25:			
+    #     speed = 10			#When score is less than 25, the speed of drop is 10
+    # elif score <= 50:
+    #     speed = 15			#When score is less than 50, the speed of drop is 15
+    # elif score <= 75:
+    #     speed = 20			#When score is less than 75, the speed of drop is 20
+    # else:
+    #     speed = 25			#Sets speed to 25 in all other conditions
+    # return speed			#Returns value speed
+    speed = (score * math.log(score + 1)) + 10
+    return speed
 
 
 def draw_meteors(met_list, met_dim, screen, yellow): #Takes from list and draws the meteors
@@ -36,7 +38,7 @@ def update_meteor_positions(met_list, height, score, speed): #Defines new 4 para
     for i, values in enumerate(met_list):			
         met_list[i][1] += speed			#Adds the speed to met_list
         
-        if met_list[i][1] == height:		#Adds the height to met_list
+        if met_list[i][1] >= height:		#Adds the height to met_list
             score += 1
             del met_list[i]       
             
@@ -44,23 +46,16 @@ def update_meteor_positions(met_list, height, score, speed): #Defines new 4 para
     return score                                             #this returns the score to the overall function
             
 def dectect_collision(player_possition, meteor_possition, player_size, meteor_size):
-    i = 0			#Defines new non-void function with 4 parameters
-    for value in meteor_possition: #For val in meteor_position it sets 4 new variables
-        meteor_x = list(range(meteor_possition[i][0], meteor_possition[i][0] + meteor_size))
-        meteor_y = list(range(meteor_possition[i][1], meteor_possition[i][1] + meteor_size))
-        player_x =  list(range(int(player_possition[0]), int(player_possition[0] + player_size)))
-        player_y =  list(range(int(player_possition[1]), int(player_possition[1] + player_size)))
-
-        for k in meteor_x:		#Has multiple conditions for false or true for a collision
-            if k in player_x:
-                for j in meteor_y:
-                    if j in player_y:
-                        return True
-                    else:
-                        return False
-            else:
-                return False
-    i += 1				
+    player_x, player_y = player_pos
+    # Loop through each meteor's position
+    for meteor in meteor_positions:
+        meteor_x, meteor_y = meteor
+        # Check for overlap between the player and the meteor
+        if (player_x < meteor_x + meteor_size and player_x + player_size > meteor_x and
+            player_y < meteor_y + meteor_size and player_y + player_size > meteor_y):
+            return True
+    return False
+					
 
 
 def collision_check(collision):	#Defines new non-void function with one parameter
